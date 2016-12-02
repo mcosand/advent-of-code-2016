@@ -12,9 +12,19 @@ namespace day_2
     static void Main(string[] args)
     {
       var steps = File.ReadAllLines(args.Length > 0 ? args[0] : "input.txt");
+      var keys = new[] { 'x', 'x', '1', 'x', 'x',
+                         'x', '2', '3', '4', 'x',
+                         '5', '6', '7', '8', '9',
+                         'x', 'A', 'B', 'C', 'x',
+                         'x', 'x', 'D', 'x', 'x' };
+//    1
+//  2 3 4
+//5 6 7 8 9  -- put 7 at 0,0 then all keys are 2 or less steps away from origin
+//  A B C
+//    D
 
-      int x = 1;
-      int y = 1;
+      int x = -2;
+      int y = 0;
 
       StringBuilder code = new StringBuilder();
 
@@ -22,25 +32,36 @@ namespace day_2
       {
         for (var j = 0; j < steps[i].Length; j++)
         {
+          int newX = x;
+          int newY = y;
           switch (steps[i][j])
           {
             case 'U':
-              y = Math.Max(0, y - 1);
+              newY = y - 1;
               break;
             case 'D':
-              y = Math.Min(2, y + 1);
+              newY = y + 1;
               break;
             case 'L':
-              x = Math.Max(0, x - 1);
+              newX = x - 1;
               break;
             case 'R':
-              x = Math.Min(2, x + 1);
+              newX = x + 1;
               break;
           }
+        //  Console.WriteLine(Math.Abs(newX) + Math.Abs(newY));
+          if (Math.Abs(newX) + Math.Abs(newY) < 3)
+          {
+            x = newX;
+            y = newY;
+          }
+          var k = keys[x + 2 + 5 * (y + 2)];
+          Console.WriteLine("{0},{1} : {2}", x, y, k);
         }
-
-        Console.WriteLine("{0},{1} : {2}", x, y, y * 3 + x + 1);
-        code.Append(y * 3 + x + 1);
+        Console.WriteLine("==========");
+        char key = keys[x + 2 + 5 * (y + 2)];
+        Console.WriteLine("{0},{1} : {2}", x, y, key);
+        code.Append(key);
       }
       Console.WriteLine(code);
     }
