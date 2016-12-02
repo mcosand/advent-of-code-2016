@@ -11,7 +11,7 @@ namespace day_1a
   {
     static void Main(string[] args)
     {
-      var input = File.ReadAllText("input.txt");
+      var input = File.ReadAllText(args.Length > 0 ? args[0] : "input.txt");
       var parts = input.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
       int x = 0;
@@ -19,7 +19,8 @@ namespace day_1a
 
       int direction = 0;
 
-
+      HashSet<string> stops = new HashSet<string> { "0, 0" };
+      List<int> firstDupe = null;
       /*
        0 : x + 0,  y + 1
        1 : x + 1, y + 0
@@ -33,13 +34,29 @@ namespace day_1a
         direction = (direction + 4 + (parts[i][0] == 'L' ? -1 : 1)) % 4;
         int length = int.Parse(parts[i].Substring(1));
 
-        x += multipliers[direction][0] * length;
-        y += multipliers[direction][1] * length;
+        string stop = "";
+        for (int j=0; j < length; j++)
+        {
+          x += multipliers[direction][0];
+          y += multipliers[direction][1];
+          stop = string.Format("{0}, {1}", x, y);
 
-        Console.WriteLine("{0}: {1} ({2}, {3})", parts[i], direction, x, y);
+          if (firstDupe == null && stops.Contains(stop))
+          {
+            Console.WriteLine("Found HQ");
+            firstDupe = new List<int> { x, y };
+          }
+          else
+          {
+            stops.Add(stop);
+          }
+        }
+
+        Console.WriteLine("{0}: {1} ({2})", parts[i], direction, stop);
+
       }
 
-      Console.WriteLine("({0}, {1}) ==> {2}", x, y, x + y);
+      Console.WriteLine("({0}, {1}) ==> {2}", firstDupe[0], firstDupe[1], Math.Abs(firstDupe[0]) + Math.Abs(firstDupe[1]));
     }
   }
 }
