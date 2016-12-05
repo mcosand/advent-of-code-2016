@@ -19,7 +19,6 @@ namespace day_04
       {
         var match = Regex.Match(line, "(.*)\\-(\\d+)\\[([a-zA-Z]+)\\]");
         if (match.Success == false) Console.Write(line + " no match");
-        Console.WriteLine(string.Format("{0} {1} {2}", match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value));
 
         var letters = string.Join("",
           match.Groups[1].Value
@@ -31,11 +30,19 @@ namespace day_04
                         .ThenBy(f => f.Letter)
                         .Select(f => f.Letter)
                         .Take(5));
-        Console.WriteLine(string.Format("{0} {1}", letters, match.Groups[3].Value));
-        if (letters == match.Groups[3].Value) code += int.Parse(match.Groups[2].Value);
-      }
+        if (letters != match.Groups[3].Value) continue;
 
-      Console.WriteLine(code);
+        var shift = int.Parse(match.Groups[2].Value);
+
+        var decoded = string.Join("", match.Groups[1].Value.Select(f => f == '-' ? ' ' : (char)(((f - 'a' + shift) % 26) + 'a')));
+
+        Console.WriteLine(decoded);
+        if (decoded.Contains("north"))
+        {
+          Console.WriteLine("### {0}", shift);
+          Console.ReadKey();
+        }
+      }
     }
   }
 }
