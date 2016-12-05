@@ -12,8 +12,8 @@ namespace day_05
   {
     static void Main(string[] args)
     {
-      var input = "wtnhxymk";
-      var output = new char[input.Length];
+      var input =  "wtnhxymk";
+      var output = new string('_', input.Length).ToCharArray();
       var hits = 0;
 
       var md5 = MD5.Create();
@@ -25,10 +25,13 @@ namespace day_05
         byte[] bytes = Encoding.ASCII.GetBytes(input + j.ToString());
         hash = string.Join("", md5.ComputeHash(bytes).Select(f => f.ToString("x2")).ToArray());
 
-        if (hash.StartsWith("00000"))
+        int position = 0;
+        if (hash.StartsWith("00000") && int.TryParse(hash[5].ToString(), out position) && position < 8 && output[position] == '_')
         {
-          output[hits++] = hash[5];
-          Console.WriteLine(hash[5]);
+          output[position] = hash[6];
+          hits++;
+          Console.WriteLine();
+          Console.WriteLine(new string(output));
         }
         j++;
 
