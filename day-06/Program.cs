@@ -27,7 +27,7 @@ namespace day_06
       StringBuilder sb = new StringBuilder();
       for(var i=0;i<lines[0].Length;i++)
       {
-        var most = bits[i].Select((f, idx) => new { Count = f, Index = idx }).OrderByDescending(f => f.Count).Select(f => f.Index).First();
+        var most = bits[i].Select((f, idx) => new { Count = f, Index = idx }).Where(f => f.Count > 0).OrderBy(f => f.Count).Select(f => f.Index).First();
         sb.Append((char)(most + 'a'));
       }
 
