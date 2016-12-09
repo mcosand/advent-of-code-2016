@@ -12,9 +12,15 @@ namespace day_09
   {
     static void Main(string[] args)
     {
-      StringBuilder output = new StringBuilder();
       string input = File.ReadAllText("input.txt");
 
+      var length = Decompress(input);
+
+    }
+
+    private static long Decompress(string input)
+    {
+      long length = 0;
       var i = 0;
       while (i < input.Length)
       {
@@ -23,28 +29,27 @@ namespace day_09
           var match = Regex.Match(input.Substring(i), "\\((\\d+)x(\\d+)\\)");
           if (!match.Success)
           {
-            output.Append('(');
+            length++;
             continue;
           }
 
           i += match.Length;
           var repeatLength = int.Parse(match.Groups[1].Value);
-          var repeat = input.Substring(i, repeatLength);
-          for (int j=0;j<int.Parse(match.Groups[2].Value);j++)
+          var decompressedLength = Decompress(input.Substring(i, repeatLength));
+          for (long j = 0; j < long.Parse(match.Groups[2].Value); j++)
           {
-            output.Append(repeat);
+            length += decompressedLength;
           }
           i += repeatLength;
         }
         else
         {
-          output.Append(input[i]);
+          length++;
           i++;
         }
       }
 
-      int length = output.Length;
-      Console.WriteLine(length);
+      return length;
     }
   }
 }
