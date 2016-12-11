@@ -69,7 +69,7 @@ namespace day_11
 
     static void Main(string[] args)
     {
-       string state = "0:SG SM PG PM | TG RG RM CG CM | TM |";
+       string state = "0:EG EM DG DM SG SM PG PM | TG RG RM CG CM | TM |";
       //string state = "0:HM LM | HG | LG | ";
 
       List<string> previousStates = new List<string>();
@@ -78,7 +78,7 @@ namespace day_11
       string[] plans = new[] { state };
       while (!plans.Any(f => IsFinished(f)))
       {
-        plans = plans.SelectMany(f => new Plan(f).BuildPlans()).Distinct().Except(previousStates).ToArray();
+        plans = plans.AsParallel().SelectMany(f => new Plan(f).BuildPlans()).AsEnumerable().Distinct().Except(previousStates).ToArray();
         steps++;
         Console.WriteLine("- {0}", plans.Length);
         previousStates.AddRange(plans);
