@@ -16,7 +16,7 @@ namespace day_12
     static void Main(string[] args)
     {
       var program = File.ReadAllLines("input.txt");
-
+      registers[2] = 1;
       
       while (pc < program.Length)
       {
