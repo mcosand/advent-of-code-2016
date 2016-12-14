@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace day_14
 {
@@ -36,8 +34,11 @@ namespace day_14
 
       while (keyIndicies.Count < 64)
       {
-        var text = string.Format("{0}{1}", salt, index);
-        var hash = BitConverter.ToString(md5.ComputeHash(Encoding.ASCII.GetBytes(text))).Replace("-", string.Empty);
+        var hash = string.Format("{0}{1}", salt, index);
+        for (var i=0;i<2017;i++)
+        {
+          hash = BitConverter.ToString(md5.ComputeHash(Encoding.ASCII.GetBytes(hash))).Replace("-", string.Empty).ToLowerInvariant();
+        }
 
 
         var modI = index % 1000;
@@ -50,15 +51,25 @@ namespace day_14
           }
         }
         searches[modI] = new Search(index, ContainsThree(hash), hash);
+        //   if (searches[modI].C != 0) Console.WriteLine("Found triple of {0} at {1}", searches[modI].C, index);
 
+        var dict = new Dictionary<char, bool>();
         for (var i=0;i<1000;i++)
         {
           if (i == modI) continue;
+
+          bool hasFive;
           if (searches[i] != null && !searches[i].FiveIndex.HasValue && searches[i].C != 0)
           {
-            if (ContainsFive(hash, searches[i].C))
+            if (!dict.TryGetValue(searches[i].C, out hasFive))
             {
-              Console.WriteLine("Found string of 5 {0}'s at index {1}", searches[i].C, index);
+              hasFive = ContainsFive(hash, searches[i].C);
+              if (hasFive) Console.WriteLine("Found string of 5 {0}'s at index {1}", searches[i].C, index);
+              dict.Add(searches[i].C, hasFive);
+            }
+
+            if (hasFive)
+            {
               searches[i].FiveIndex = index;
             }
           }
