@@ -27,7 +27,8 @@ namespace day_15
         new Disc(17, 10),
         new Disc(3, 2),
         new Disc(19, 9),
-        new Disc(7, 0)
+        new Disc(7, 0),
+        new Disc(11, 0)
         /*new Disc(5, 4),
         new Disc(2, 1)*/
       };
