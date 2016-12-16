@@ -11,7 +11,7 @@ namespace day_16
     static void Main(string[] args)
     {
       string input = "11011110011011101";
-      int size = 272;
+      int size = 35651584;
 
       while (input.Length <= size) input = GetNext(input);
 
