@@ -49,9 +49,9 @@ namespace day_17
 
       string fmt = "{0}:{1}:{2}:{3}";
       if (x > 0 && whichOpen[2] == '1') yield return string.Format(fmt, x - 1, y, path + 'L', GetWhichOpen(path + 'L'));
-      if (x < 4 && whichOpen[3] == '1') yield return string.Format(fmt, x + 1, y, path + 'R', GetWhichOpen(path + 'R'));
+      if (x < 3 && whichOpen[3] == '1') yield return string.Format(fmt, x + 1, y, path + 'R', GetWhichOpen(path + 'R'));
       if (y > 0 && whichOpen[0] == '1') yield return string.Format(fmt, x, y - 1, path + 'U', GetWhichOpen(path + 'U'));
-      if (y < 4 && whichOpen[1] == '1') yield return string.Format(fmt, x, y + 1, path + 'D', GetWhichOpen(path + 'D'));
+      if (y < 3 && whichOpen[1] == '1') yield return string.Format(fmt, x, y + 1, path + 'D', GetWhichOpen(path + 'D'));
     }
 
     static string GetWhichOpen(string path)
