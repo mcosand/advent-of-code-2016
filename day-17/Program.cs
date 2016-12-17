@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace day_17
 {
@@ -11,54 +10,74 @@ namespace day_17
   {
     //static string input = "ulqzkmiv";
     static string input = "dmypynyp";
-    static MD5 md5 = MD5.Create();
 
     static void Main(string[] args)
     {
-      string whichOpen = GetWhichOpen("");
+      int longest = 0;
+      string longStr = null;
 
-      var states = new [] { string.Format("0:0::{0}", whichOpen) };
+      Stack<string> states = new Stack<string>();
+      states.Push("0:0:" + GetWhichOpen("")+":");
 
-      int count = 0;
-      while (!states.Any(f => IsFinished(f)))
+      while (states.Count > 0)
       {
-        count++;
-        Console.WriteLine("{0} {1}", count, states.Length);
-        states = states.SelectMany(f => {
-          return NextStates(f);
-        }).ToArray();
+        var s = states.Pop();
+
+        string[] parts = s.Split(':');
+        string path = parts[4];
+        string whichOpen = parts[2];
+
+        if (s.StartsWith("3:3"))
+        {
+          if (path.Length > longest)
+          {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(path.Length);
+            longest = path.Length;
+            longStr = path;
+          }
+          Console.ForegroundColor = ConsoleColor.Gray;
+          Console.Write('.');
+          continue;
+        }
+
+        int x = int.Parse(parts[0]);
+        int y = int.Parse(parts[1]);
+
+
+        if (x > 0 && whichOpen[2] == '1') MaybePush(states, x - 1, y, path + 'L');
+        if (x < 3 && whichOpen[3] == '1') MaybePush(states, x + 1, y, path + 'R');
+        if (y > 0 && whichOpen[0] == '1') MaybePush(states, x, y - 1, path + 'U');
+        if (y < 3 && whichOpen[1] == '1') MaybePush(states, x, y + 1, path + 'D');
       }
 
-      var state = states.First(f => IsFinished(f));
-      Console.Write(state);
-    }
-    
-    private static bool IsFinished(string state)
+      Console.WriteLine(longest);
+    }    
+
+    private static void MaybePush(Stack<string> states, int x, int y, string path)
     {
-      return state.StartsWith("3:3");
+      string which = GetWhichOpen(path);
+      if (which != "0000:0") states.Push(string.Format("{0}:{1}:{2}:{3}", x, y, which, path));
     }
 
-    private static IEnumerable<string> NextStates(string state)
-    {
-      string[] parts = state.Split(':');
-      int x = int.Parse(parts[0]);
-      int y = int.Parse(parts[1]);
-      string path = parts[2];
-      
-      string whichOpen = parts[3];
-
-      string fmt = "{0}:{1}:{2}:{3}";
-      if (x > 0 && whichOpen[2] == '1') yield return string.Format(fmt, x - 1, y, path + 'L', GetWhichOpen(path + 'L'));
-      if (x < 3 && whichOpen[3] == '1') yield return string.Format(fmt, x + 1, y, path + 'R', GetWhichOpen(path + 'R'));
-      if (y > 0 && whichOpen[0] == '1') yield return string.Format(fmt, x, y - 1, path + 'U', GetWhichOpen(path + 'U'));
-      if (y < 3 && whichOpen[1] == '1') yield return string.Format(fmt, x, y + 1, path + 'D', GetWhichOpen(path + 'D'));
-    }
+    static MD5 md5 = MD5.Create();
 
     static string GetWhichOpen(string path)
     {
       var hash = BitConverter.ToString(md5.ComputeHash(Encoding.ASCII.GetBytes(input + path))).Replace("-", string.Empty).ToLowerInvariant();
-      string opens = new string(hash.Take(4).Select(f => f > 'a' ? '1' : '0').ToArray());
-      return opens;
+      int bits = 0;
+      string opens = new string(hash.Take(4).Select(f =>
+      {
+        char answer = '0';
+        bits = bits << 1;
+        if (f > 'a')
+        {
+          bits++;
+          answer = '1';
+        }
+        return answer;
+      }).ToArray());
+      return opens + ":" + bits.ToString("x");
     }
   }
 }
