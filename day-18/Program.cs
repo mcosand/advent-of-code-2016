@@ -15,15 +15,17 @@ namespace day_18
       input = ".^^^^^.^^.^^^.^...^..^^.^.^..^^^^^^^^^^..^...^^.^..^^^^..^^^^...^.^.^^^^^^^^....^..^^^^^^.^^^.^^^.^^";
       int count = 400000;
 
-      List<string> rows = new List<string> { input };
-      int safe = GetSafe(input);
-      Console.WriteLine(input);
-      
+
+      string lastRow = input;
+      int safe = GetSafe(lastRow);
+//      Console.WriteLine(input);
+
       for (int i=1;i<count;i++)
       {
-        rows.Add(NextRow(rows[i - 1]));
-        safe += GetSafe(rows[i]);
-    //    Console.WriteLine(rows[i]);
+        string row = NextRow(lastRow);
+        safe += GetSafe(row);
+        //    Console.WriteLine(rows[i]);
+        lastRow = row;
       }
 
       Console.WriteLine(safe);
