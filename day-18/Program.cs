@@ -13,17 +13,17 @@ namespace day_18
     {
       string input = ".^^.^.^^^^";
       input = ".^^^^^.^^.^^^.^...^..^^.^.^..^^^^^^^^^^..^...^^.^..^^^^..^^^^...^.^.^^^^^^^^....^..^^^^^^.^^^.^^^.^^";
-      int count = 40;
+      int count = 400000;
 
       List<string> rows = new List<string> { input };
       int safe = GetSafe(input);
       Console.WriteLine(input);
-
+      
       for (int i=1;i<count;i++)
       {
         rows.Add(NextRow(rows[i - 1]));
         safe += GetSafe(rows[i]);
-        Console.WriteLine(rows[i]);
+    //    Console.WriteLine(rows[i]);
       }
 
       Console.WriteLine(safe);
