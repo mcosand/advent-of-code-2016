@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace day_19
 {
   public class Elf
   {
-    public int id { get; set; }
-    public int presents { get; set; }
-    public Elf nextElf { get; set; }
-    public Elf prevElf { get; set; }
+    public int Id { get; set; }
+    public int Presents { get; set; }
+    public Elf NextElf { get; set; }
+    public Elf PrevElf { get; set; }
   }
 
 
@@ -19,21 +15,21 @@ namespace day_19
   {
     static void Main(string[] args)
     {
-      int size = 3017957;
-      size = 5;
+      int size = 5;
+      size = 3017957;
 
-      Elf root = new Elf { id = 1, presents = 1 };
+      Elf root = new Elf { Id = 1, Presents = 1 };
       Elf elf = root;
       Elf target = null;
 
       // build doubly-linked list so we can repair the ring when we remove the target
-      for (int i=1;i<size+1;i++)
+      for (int i = 1; i < size + 1; i++)
       {
-        elf.nextElf = (i == size) ? root : new Elf { id = i + 1, presents = 1, prevElf = elf };
-        elf = elf.nextElf;
+        elf.NextElf = (i == size) ? root : new Elf { Id = i + 1, Presents = 1, PrevElf = elf };
+        elf = elf.NextElf;
         if (i == size / 2) target = elf;
       }
-      root.prevElf = elf;
+      root.PrevElf = elf;
 
       int count = size;
 
@@ -41,21 +37,23 @@ namespace day_19
       // March the two cursors around the shrinking ring.
 
       Console.WriteLine("built");
-      while (elf.nextElf != elf)
+      while (elf.NextElf != elf)
       {
-    //    Console.WriteLine("{0} steals {1}'s {2} presents", elf.id, target.id, target.presents);
-        elf.presents += target.presents;
+        //Console.WriteLine("{0} steals {1}'s {2} presents", elf.id, target.id, target.presents);
+
+        // Ended up not being needed.
+        elf.Presents += target.Presents;
 
 
-        target.prevElf.nextElf = target.nextElf;
-        target.nextElf.prevElf = target.prevElf;
-        target = count % 2 == 1 ? target.nextElf.nextElf : target.nextElf;
+        target.PrevElf.NextElf = target.NextElf;
+        target.NextElf.PrevElf = target.PrevElf;
+        target = count % 2 == 1 ? target.NextElf.NextElf : target.NextElf;
         count--;
 
-        elf = elf.nextElf;
+        elf = elf.NextElf;
       }
 
-      int answer = elf.id;
+      int answer = elf.Id;
       Console.WriteLine(answer);
     }
   }
