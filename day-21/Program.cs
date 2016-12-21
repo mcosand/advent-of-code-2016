@@ -12,27 +12,32 @@ namespace day_21
   {
     static void Main(string[] args)
     {
-      List<char> text = new List<char>("abcdefgh".ToCharArray());
+      var startText = "decab";
+      startText = "fbgdceah";
+
+      List<char> text = new List<char>(startText.ToCharArray());
 
       Console.WriteLine(new string(text.ToArray()));
-      RunRules(text);
+      RunRules(text, true);
 
       string cipher = new string(text.ToArray());
       Console.WriteLine(cipher);
     }
 
-    private static void RunRules(List<char> text)
+    private static void RunRules(List<char> text, bool inverse)
     {
-      foreach (var line in File.ReadAllLines("input.txt"))
+      var lines = File.ReadAllLines("input.txt").AsEnumerable();
+      if (inverse) lines = lines.Reverse();
+      foreach (var line in lines)
       {
         Console.WriteLine(line);
-        RunRule(text, line);
+        RunRule(text, line, inverse);
         Console.WriteLine("  " + new string(text.ToArray()));
 
       }
     }
 
-    private static void RunRule(List<char> text, string line)
+    private static void RunRule(List<char> text, string line, bool inverse)
     {
       var match = Regex.Match(line, "swap position (\\d+) with position (\\d+)");
       if (match.Success)
@@ -61,19 +66,15 @@ namespace day_21
       {
         int rot = int.Parse(match.Groups[2].Value);
         string direction = match.Groups[1].Value;
-        Rotate(text, rot, direction);
+        Rotate(text, rot, direction, inverse);
         return;
       }
 
       match = Regex.Match(line, "rotate based on position of letter ([a-z])");
       if (match.Success)
       {
-        int i = 0;
-        for (; i < text.Count; i++)
-        {
-          if (text[i] == match.Groups[1].Value[0]) break;
-        }
-        Rotate(text, 1 + i + ((i >= 4) ? 1 : 0), "right");
+        if (inverse) LetterPositionRotateBackward(text, match.Groups[1].Value[0]);
+        else LetterPositionRotateForward(text, match.Groups[1].Value[0]);
         return;
       }
 
@@ -97,17 +98,42 @@ namespace day_21
       if (match.Success)
       {
         var x = int.Parse(match.Groups[1].Value);
-        char tmp = text[x];
-        text.RemoveAt(x);
-        text.Insert(int.Parse(match.Groups[2].Value), tmp);
+        var y = int.Parse(match.Groups[2].Value);
+        
+        char tmp = text[inverse ? y : x];
+        text.RemoveAt(inverse ? y : x);
+        text.Insert(inverse ? x : y, tmp);
       }
     }
 
-    private static void Rotate(List<char> text, int rot, string direction)
+    private static void LetterPositionRotateBackward(List<char> text, char letter)
+    {
+      string result = new string(text.ToArray());
+      List<char> dummy;
+      do
+      {
+        Rotate(text, 1, "left", false);
+        dummy = new List<char>(text);
+        LetterPositionRotateForward(dummy, letter);
+      } while (new string(dummy.ToArray()) != result);
+    }
+
+    private static void LetterPositionRotateForward(List<char> text, char letter)
+    {
+      int i = 0;
+      for (; i < text.Count; i++)
+      {
+        if (text[i] ==letter) break;
+      }
+      Rotate(text, 1 + i + ((i >= 4) ? 1 : 0), "right", false);
+    }
+
+    private static void Rotate(List<char> text, int rot, string direction, bool inverse)
     {
       char[] source = text.ToArray();
       rot = rot % text.Count;
       int sign = direction == "left" ? 1 : -1;
+      sign *= (inverse ? -1 : 1);
       for (int i = 0; i < text.Count; i++)
       {
         int from = (text.Count + i + (sign * rot)) % text.Count;
