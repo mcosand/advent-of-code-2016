@@ -16,12 +16,29 @@ namespace day_23
     static void Main(string[] args)
     {
       var program = File.ReadAllLines("input.txt");
-      registers[0] = 7;
+      registers[0] = 12;
 
       while (pc < program.Length)
       {
         Console.WriteLine(string.Join("  ", registers) + " " + pc + " " + program[pc]);
-    //    Console.WriteLine(program[pc]);
+
+        if (pc < program.Length - 2 && program[pc] == "inc a" && program[pc + 1] == "dec d" && program[pc + 2] == "jnz d -2")
+        {
+          Console.WriteLine("Shortcut A");
+          registers[0] += registers[3];
+          registers[3] = 0;
+          pc += 3;
+        }
+
+
+        if (pc + 5 < program.Length && program[pc] == "cpy b c" && program[pc + 1] == "inc a" && program[pc + 2] == "dec c" && program[pc + 3] == "jnz c -2" && program[pc + 4] == "dec d" && program[pc + 5] == "jnz d -5")
+        {
+          Console.WriteLine("Shortcut B");
+          registers[0] += registers[1] * registers[3];
+          registers[2] = 0;
+          registers[3] = 0;
+          pc += 6;
+        }
 
         var match = Regex.Match(program[pc], "cpy ([a-d]|-?\\d+) ([a-d])");
         if (match.Success)
@@ -68,7 +85,8 @@ namespace day_23
           if (parts.Length == 2)
           {
             parts[0] = parts[0] == "inc" ? "dec" : "inc";
-          } else if (parts.Length == 3)
+          }
+          else if (parts.Length == 3)
           {
             parts[0] = parts[0] == "jnz" ? "cpy" : "jnz";
           }
