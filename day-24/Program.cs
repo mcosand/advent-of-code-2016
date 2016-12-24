@@ -27,7 +27,7 @@ namespace day_24
 
 
       int y = 0;
-      Console.SetWindowSize(170, 50);
+      Console.SetWindowSize(185, 50);
       foreach (var line in File.ReadAllLines("input.txt"))
       {
         Console.WriteLine(line);
@@ -54,9 +54,9 @@ namespace day_24
       Console.Clear();
       Console.ForegroundColor = ConsoleColor.White;
       Console.SetCursorPosition(0, 0);
+
       for (int fromId=0;fromId<coords.Count;fromId++)
-      {
-        Console.WriteLine("a");
+      {  
         for (int toId=0;toId<fromId;toId++)
         {
           var distance = new PathFinder(coords.Single(f => f.Id == fromId), coords.Single(f => f.Id == toId)).GetDistance();
@@ -102,7 +102,7 @@ namespace day_24
 
           Point position = coords.Single(f => f.Id == visited.Last());
 
-          if (visited.Length == coords.Count && distance < shortest)
+          if (visited.Length == coords.Count + 1 && distance < shortest)
           {
             shortest = distance;
             continue;
@@ -112,17 +112,29 @@ namespace day_24
           }
 
 
-          for (int nextId=0; nextId < coords.Count; nextId++)
+          if (visited.Length == coords.Count)
           {
-            if (visited.Contains(nextId)) continue;
+            AddStep(steps, parts[0], distance, position, 0);
+          }
+          else
+          {
+            for (int nextId = 0; nextId < coords.Count; nextId++)
+            {
+              if (visited.Contains(nextId)) continue;
 
-            string nextState = parts[0] + "," + nextId + ":" + (distance + position.Distances[nextId]);
-            Console.WriteLine(nextState);
-            steps.Enqueue(nextState);
+              AddStep(steps, parts[0], distance, position, nextId);
+            }
           }
         }
 
         return shortest;
+      }
+
+      private static void AddStep(Queue<string> steps, string soFar, int distance, Point position, int nextId)
+      {
+        string nextState = soFar + "," + nextId + ":" + (distance + position.Distances[nextId]);
+        Console.WriteLine(nextState);
+        steps.Enqueue(nextState);
       }
     }
 
